@@ -29,11 +29,11 @@ class UNET(nn.Module):
             self.downs.append(Double_Conv(input_channels, feature))
             input_channels = feature
 
-
-        for feature in reversed(features):
-            self.ups.append(nn.ConvTranspose2d(feature*2,feature,kernel_size=2, stride=2))
-            self.ups.append(Double_Conv(feature*2,feature))
         self.bottleneck = Double_Conv(features[-1],features[-1]*2)
+        
+        for feature in reversed(features):
+            self.ups.append(nn.ConvTranspose2d(feature*2,feature,kernel_size=2, stride=2))  #https://medium.com/apache-mxnet/transposed-convolutions-explained-with-ms-excel-52d13030c7e8
+            self.ups.append(Double_Conv(feature*2,feature))
         self.final_conv = nn.Conv2d(features[0], output_channels, kernel_size=1)
 
     def forward(self, x):
@@ -53,20 +53,26 @@ class UNET(nn.Module):
             skip_connection = skip_connections[idx//2]
 
             if x.shape != skip_connection.shape:
-                x = TF.resize(x, size=skip_connection.shape[2:])
+                x = torch.nn.functional.interpolate(x, size=skip_connection.shape[2:])
 
             concat_skip = torch.cat((skip_connection, x), dim=1)
             x = self.ups[idx+1](concat_skip)
-
         return self.final_conv(x)
 
 def test():
-    input_channels=3
-    x = torch.rand((3,input_channels,160,160))
-    model = UNET(input_channels=input_channels, output_channels=64)
-    logits = model(x)
-    print(logits.shape)
+    input_channels=1
+    x = torch.rand((1,input_channels,161,161))
     print(x.shape)
+    print(x.flatten(2).shape)
+
+    print(x.flatten(2).squeeze().shape)
+    model = UNET(input_channels=input_channels, output_channels=64)
+    pred = model(x)
+    _,a = pred.max(dim=1)
+    print(_)
+    print(a)
+    # print(logits.shape)
+    # print(x.shape)
     # assert logits.shape ==x.shape
 
 if __name__ == "__main__":
