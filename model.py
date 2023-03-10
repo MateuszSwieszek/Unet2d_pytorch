@@ -49,31 +49,9 @@ class UNET(nn.Module):
 
         for idx in range(0, len(self.ups), 2):
             x = self.ups[idx](x)
-
             skip_connection = skip_connections[idx//2]
-
             if x.shape != skip_connection.shape:
                 x = torch.nn.functional.interpolate(x, size=skip_connection.shape[2:])
-
             concat_skip = torch.cat((skip_connection, x), dim=1)
             x = self.ups[idx+1](concat_skip)
         return self.final_conv(x)
-
-def test():
-    input_channels=1
-    x = torch.rand((1,input_channels,161,161))
-    print(x.shape)
-    print(x.flatten(2).shape)
-
-    print(x.flatten(2).squeeze().shape)
-    model = UNET(input_channels=input_channels, output_channels=64)
-    pred = model(x)
-    _,a = pred.max(dim=1)
-    print(_)
-    print(a)
-    # print(logits.shape)
-    # print(x.shape)
-    # assert logits.shape ==x.shape
-
-if __name__ == "__main__":
-    test()
