@@ -3,7 +3,7 @@ import torchvision
 from dataset import CaravanDataset
 from torch.utils.data import DataLoader
 
-def save_checkpoint(state, filename="checkpoint.pth.tar"):
+def save_checkpoint(state, filename="Checkpoints\checkpoint.pth.tar"):
     print("==> Saving checkpoint")
     torch.save(state, filename)
 
@@ -52,21 +52,27 @@ def get_loaders(
 
     return train_loader, val_loader
 
-def check_accuracy(loader, model, device="cuda"):
+def check_accuracy(loader, model, summary_writer, step, loss_fn, device="cuda"):
     num_correct = 0
     num_pixels = 0
     dice_score = 0
+    loss = 0
     model.eval()
 
     with torch.no_grad():
         for x, y in loader:
             x = x.to(device)
             y = y.to(device)
+            y = y.float().unsqueeze(1).to(device=device)
             preds = torch.sigmoid(model(x))
             preds = (preds > 0.5).float()
             num_correct += (preds == y).sum()
             num_pixels += torch.numel(preds)
             dice_score += (2 * (preds * y).sum()) / ((preds + y).sum() + 1e-8)
+            loss += loss_fn(y,preds).item()
+    summary_writer.add_scalars("Acc", {"val":num_correct/num_pixels}, step)
+    summary_writer.add_scalars("Dice", {"val":dice_score/len(loader)}, step)
+    summary_writer.add_scalars("Loss", {"val":loss/len(loader)}, step)
     print(f"Got {num_correct}/{num_pixels} with acc {num_correct/num_pixels*100:.2f}, dice score: {dice_score/len(loader):.2f}")
     model.train()
 

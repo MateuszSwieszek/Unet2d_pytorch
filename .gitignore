@@ -1,4 +1,6 @@
 carvana-image-masking-challenge.zip
 data/
+runs/
+Checkpoints/
 unet_venv/
 __pycache__/
