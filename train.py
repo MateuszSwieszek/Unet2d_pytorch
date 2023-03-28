@@ -121,8 +121,9 @@ def main():
     )
     summary_writer = SummaryWriter()
     model = UNET(input_channels=3, output_channels=1).to(DEVICE)
+    compiled_model = torch.compile(model)
     loss_fn = nn.BCEWithLogitsLoss()
-    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    optimizer = optim.Adam(compiled_model.parameters(), lr=LEARNING_RATE)
     train_loader, val_loader = get_loaders(
         TRAIN_IMG_DIR,
         TRAIN_MASK_DIR,
@@ -138,9 +139,9 @@ def main():
     scaler = torch.cuda.amp.GradScaler()
     
     for epoch in range(NUM_EPOCHS):
-        train_fn(train_loader, val_loader, model, optimizer, loss_fn, scaler, 10, summary_writer)
+        train_fn(train_loader, val_loader, compiled_model, optimizer, loss_fn, scaler, 10, summary_writer)
         checkpoint = {
-            "state_dict": model.state_dict(),
+            "state_dict": compiled_model.state_dict(),
             "optimizer": optimizer.state_dict()
         }
 
