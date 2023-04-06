@@ -8,6 +8,7 @@ class CaravanDataset(Dataset):
         self.image_dir = image_dir
         self.mask_dir = mask_dir
         self.transform = transform
+        print(f"DATASET {image_dir}")
         self.images = os.listdir(image_dir)
     
     def __len__(self):
