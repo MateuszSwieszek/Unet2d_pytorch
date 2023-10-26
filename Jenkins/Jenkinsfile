@@ -1,13 +1,13 @@
 pipeline {
     environment
     {
-        REPO_PATH = "${WORKSPACE}/SFL"
+        REPO_PATH = "${WORKSPACE}/Unet2d_pytorch"
     }
     agent any
     stages {
         stage('Build') {
             steps {
-                sh "${REPO_PATH}/Jenkinsstart_file.sh"
+                sh "${REPO_PATH}/Jenkins/start_file.sh"
                 sh '''
                     echo "Multiline shell steps works too"
                     ls -lah
