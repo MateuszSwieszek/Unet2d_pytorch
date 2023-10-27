@@ -10,7 +10,6 @@ pipeline {
             steps {
                 sh ''' echo "TESSSST" '''
                 sh ''' echo  ${REPO_PATH}'''
-                sh ''' bash chmod +x ${REPO_PATH}/Jenkins/start_file.sh - '''
                 sh 'bash -e -c -x "chmod +x ' + script_path + '; . ' + script_path + '"'
 
                 sh '''
