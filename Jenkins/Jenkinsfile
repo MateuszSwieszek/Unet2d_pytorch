@@ -2,6 +2,7 @@ pipeline {
     environment
     {
         REPO_PATH = "${WORKSPACE}/Unet2d_pytorch"
+        script_path = "${WORKSPACE}/Unet2d_pytorch/Jenkins/start_file.sh"
     }
     agent any
     stages {
@@ -9,7 +10,9 @@ pipeline {
             steps {
                 sh ''' echo "TESSSST" '''
                 sh ''' echo  ${REPO_PATH}'''
-                sh ''' ${REPO_PATH}/Jenkins/start_file.sh '''
+                sh ''' bash chmod +x ${REPO_PATH}/Jenkins/start_file.sh - '''
+                sh 'bash -e -c -x "chmod +x ' + script_path + '; . ' + script_path + '"'
+
                 sh '''
                     echo "Multiline shell steps works too"
                     ls -lah
