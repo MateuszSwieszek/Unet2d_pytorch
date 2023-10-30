@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 from model import UNET
 import torch.optim as optim
+import pytest
 from torch.utils.tensorboard import SummaryWriter
 from utils import (
     load_checkpoint,
@@ -196,6 +197,9 @@ def main():
     runner.init_loaders()
     runner.run_model(model)
 
-
-if __name__ == "__main__":
-    main()
+def test_unet_placeholder():
+    torch.manual_seed(0)
+    inputs = torch.randn(3,1,161,161)
+    model = UNET(input_channels=1, output_channels=1)
+    preds = model(inputs)
+    assert False not in torch.eq(preds, preds)

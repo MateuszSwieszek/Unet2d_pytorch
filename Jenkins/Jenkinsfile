@@ -10,12 +10,17 @@ pipeline {
             steps {
                 sh ''' echo "TESSSST" '''
                 sh ''' echo  ${REPO_PATH}'''
-                sh 'bash -e -c -x "chmod +x ' + script_path + '; . ' + script_path + '"'
-
                 sh '''
                     echo "Multiline shell steps works too"
                     ls -lah
                 '''
+            }
+        }
+        stage("test PythonEnv") {
+
+            withPythonEnv('python3') {
+                sh 'pip install -r requirements.txt'
+                sh 'pytest test_model.py'
             }
         }
     }
