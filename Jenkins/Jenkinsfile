@@ -1,4 +1,6 @@
 pipeline {
+    agent { docker { image 'python:3.12.0-alpine3.18' } }
+
     environment
     {
         REPO_PATH = "${WORKSPACE}/Unet2d_pytorch"
@@ -18,7 +20,7 @@ pipeline {
         }
         stage("test PythonEnv") {
             steps{
-                withPythonEnv('python3') {
+                withPythonEnv('python3.8') {
                     sh 'pip install -r requirements.txt'
                     sh 'pytest test_model.py'
                 }
