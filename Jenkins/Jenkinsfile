@@ -17,10 +17,11 @@ pipeline {
             }
         }
         stage("test PythonEnv") {
-
-            withPythonEnv('python3') {
-                sh 'pip install -r requirements.txt'
-                sh 'pytest test_model.py'
+            steps{
+                withPythonEnv('python3') {
+                    sh 'pip install -r requirements.txt'
+                    sh 'pytest test_model.py'
+                }
             }
         }
     }
