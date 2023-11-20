@@ -202,4 +202,6 @@ def test_unet_placeholder():
     inputs = torch.randn(3,1,161,161)
     model = UNET(input_channels=1, output_channels=1)
     preds = model(inputs)
+    print("kk")
     assert False not in torch.eq(preds, preds)
+    
